@@ -22,7 +22,7 @@ public class Main {
 
 	public static Cell[] cells = new Cell[10];
 	
-	private static boolean isCloseRequested = false;
+	private static volatile boolean isCloseRequested = false;
 	
 	public Main(){
 		try {
@@ -30,6 +30,7 @@ public class Main {
 			Display.setTitle("Display test");
 			Display.create();
 			getReadyFor2DDrawing();
+			startSim();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			Display.destroy();
@@ -38,14 +39,33 @@ public class Main {
 		while(!Display.isCloseRequested() && !isCloseRequested) {
 			checkKeyboard();
 			Display.update();
+			try{Thread.sleep(50l);}catch(InterruptedException e){ e.printStackTrace(); isCloseRequested = true;}
+			updateCells(cells);
 		}
 		Display.destroy();
 		System.exit(0);
 	}
 	
+	private static void updateCells(Cell[] cellArray){
+		for(int i = 0; i <= cellArray.length - 1; i++){
+			cellArray[i].cellUpdate();
+			clearDisplay();
+			drawCells(cellArray);
+		}
+	}
+	
+	private static void drawCells(Cell[] cellArray) {
+		clearDisplay();
+		for (int i = 0; i <= cellArray.length - 1; i++){
+			drawCell(cellArray[i]);
+		}
+	}
+
 	public void checkKeyboard(){
 		while(Keyboard.next()){
 			if(Keyboard.isKeyDown(Keyboard.KEY_C) && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))){
+				clearDisplay();
+				Display.update();
 				clearDisplay();
 			}
 			
@@ -53,16 +73,13 @@ public class Main {
 				this.shutdown();
 			}
 			
-			if(Keyboard.isKeyDown(Keyboard.KEY_S) && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))){
-				this.startSim();
+			if(Keyboard.isKeyDown(Keyboard.KEY_D) && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))){
+				new GTheoryII(cells);
 			}
 		}
 	}
 	
-	public void clearDisplay(){
-		Display.update();
-		glClear(GL_COLOR_BUFFER_BIT);
-		Display.update();
+	public static void clearDisplay(){
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 	
@@ -77,7 +94,7 @@ public class Main {
 		new Main();
 	}
 	
-	private void drawShape1(float startX, float startY, float sizeX, float sizeY){
+	private static void drawShape1(float startX, float startY, float sizeX, float sizeY){
 		glBegin(GL_TRIANGLES);
 		glVertex2f(startX, startY);
 		glVertex2f(startX, startY + sizeY);
@@ -85,7 +102,7 @@ public class Main {
 		glEnd();
 	}
 	
-	public void drawShape2(float startX, float startY, float sizeX, float sizeY){
+	public static void drawShape2(float startX, float startY, float sizeX, float sizeY){
 		glBegin(GL_TRIANGLES);
 		glVertex2f(startX + sizeX, startY + sizeY);
 		glVertex2f(startX + sizeX, startY);
@@ -103,14 +120,14 @@ public class Main {
 	public void startSim(){
 		for(int i = 0; i <= 9; i++){
 			Cell cell = cells[i];
-			this.drawCell(cell);
+			drawCell(cell);
+			Display.update();
+			drawCell(cell);
 		}
+		new GTheoryII(cells);
 	}
 	
-	public void drawCell(Cell cell){
-		drawShape1(cell.getPosX(), cell.getPosY(), cell.getSizeX(), cell.getSizeY());
-		drawShape2(cell.getPosX(), cell.getPosY(), cell.getSizeX(), cell.getSizeY());
-		Display.update();
+	public static void drawCell(Cell cell){
 		drawShape1(cell.getPosX(), cell.getPosY(), cell.getSizeX(), cell.getSizeY());
 		drawShape2(cell.getPosX(), cell.getPosY(), cell.getSizeX(), cell.getSizeY());
 	}

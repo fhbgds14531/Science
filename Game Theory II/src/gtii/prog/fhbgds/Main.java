@@ -63,10 +63,12 @@ public class Main {
 
 	public void checkKeyboard(){
 		while(Keyboard.next()){
-			if(Keyboard.isKeyDown(Keyboard.KEY_C) && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))){
-				clearDisplay();
-				Display.update();
-				clearDisplay();
+			if(Keyboard.isKeyDown(Keyboard.KEY_P) && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))){
+				for(int i = 0; i <= 3; i++){
+					int cellID = Cell.rand.nextInt(10);
+//					cellID--;
+					cells[cellID].setDead();
+				}
 			}
 			
 			if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){

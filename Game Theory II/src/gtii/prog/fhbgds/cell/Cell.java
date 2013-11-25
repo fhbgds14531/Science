@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Cell {
 	
-	Random rand = new Random();
+	public static Random rand = new Random();
 	
 	int xPos = rand.nextInt(630);
 	int yPos = rand.nextInt(470);
@@ -17,6 +17,8 @@ public class Cell {
 	int reproductionChance = 25;
 
 	private boolean isDead;
+
+	private boolean isFinishedPathing;
 	
 	public void cellUpdate(){
 		if(rand.nextFloat() < 0.01){
@@ -57,8 +59,16 @@ public class Cell {
 			this.isDead = true;
 		}
 	}
+	
+	public void setDead(){
+		this.isDead = true;
+		this.sizeX = 0;
+		this.sizeY = 0;
+	}
 
 	private void pickRandomPath(){
+		this.isFinishedPathing = false;
+		int xDest, yDest;
 		
 	}
 	
